@@ -56,7 +56,15 @@ def main():
     configurations = [
         'nvim',
         'alacritty',
+        'ghostty',
     ]
+
+    if sys.platform == 'darwin':
+        configurations += [
+            'aerospace',
+            'sketchybar',
+            'skhd',
+        ]
 
     if command == 'list':
         print(configurations)
