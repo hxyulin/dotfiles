@@ -44,14 +44,3 @@ if vim.fn.executable "clangd" then
         root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git"),
     }
 end
--- if rust_analyzer exists in path
-if vim.fn.executable "rust-analyzer" then
-    lspconfig.rust_analyzer.setup {
-        on_attach = on_attach,
-        on_init = nvlsp.on_init,
-        capabilities = nvlsp.capabilities,
-        cmd = { "rust-analyzer" },
-        filetypes = { "rust" },
-        root_dir = lspconfig.util.root_pattern("Cargo.toml"),
-    }
-end

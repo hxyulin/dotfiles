@@ -1,3 +1,4 @@
 font-size = 12
 mouse-scroll-multiplier = 2
 font-family = "JetbrainsMono NFM"
+macos-titlebar-proxy-icon = hidden
