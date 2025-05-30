@@ -1,39 +1,35 @@
 return {
-    {
-        "stevearc/conform.nvim",
-        -- event = 'BufWritePre', -- uncomment for format on save
-        opts = require "configs.conform",
-    },
+  {
+    "stevearc/conform.nvim",
+    -- event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
+  },
 
-    {
-        "nvim-treesitter/nvim-treesitter",
-        run = ":TSUpdate",
-        config = function()
-            require "configs.treesitter"
-        end,
-    },
+  -- These are some examples, uncomment them if you want to see them work!
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require "configs.lspconfig"
+    end,
+  },
 
-    {
-        "neovim/nvim-lspconfig",
-        config = function()
-            require "configs.lspconfig"
-        end,
-    },
+  {
+      "mason-org/mason-lspconfig.nvim",
+      lazy = false,
+      opts = {},
+      dependencies = {
+          { "mason-org/mason.nvim", opts = {} },
+          "neovim/nvim-lspconfig",
+      },
+  },
 
-    {
-        "williamboman/mason-lspconfig.nvim",
-        config = function()
-            require "configs.mason"
-        end,
-    },
+  -- test new blink
+  -- { import = "nvchad.blink.lazyspec" },
 
-    {
-        "hrsh7th/nvim-cmp",
-        config = function()
-            require("configs.cmp")
-        end,
-    },
-
+  {
+  	"nvim-treesitter/nvim-treesitter",
+  	opts = {},
+  },
     {
         "mbbill/undotree",
         cmd = "UndotreeToggle",
@@ -53,7 +49,6 @@ return {
         "rcarriga/nvim-dap-ui",
         dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
     },
-
     {
         "theHamsta/nvim-dap-virtual-text",
     },
@@ -62,23 +57,14 @@ return {
         "wakatime/vim-wakatime",
         lazy = false,
     },
-
-    {
-        "supermaven-inc/supermaven-nvim",
-        config = function()
-            require("supermaven-nvim").setup({})
-        end,
-        lazy = false,
-    },
-    {
-        "iamcco/markdown-preview.nvim",
-        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-        ft = { "markdown" },
-        build = function() vim.fn["mkdp#util#install"]() end,
-        lazy = false,
-    },
     {
         "editorconfig/editorconfig-vim",
         lazy = false,
-    }
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        config = function()
+            require("configs.cmp")
+        end,
+    },
 }
