@@ -10,8 +10,36 @@ def get_config_dir():
     else:
         return os.path.expanduser('~/.config')
 
-def get_script_dir():
-    return os.path.dirname(os.path.realpath(__file__))
+CONFIG_DIR = get_config_dir()
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+# TODO: Read env variable and or arguments
+CONFIG_DIR = "~/.config"
+
+CONFIGURATIONS = {
+    "nvim": {
+        "platforms": [],
+        "src": "nvim",
+        "dest": f"{CONFIG_DIR}/nvim",
+        "deps": [],
+        # Additional setup function
+        "setup": None,
+    },
+    "starship": {
+        "platforms": [],
+        "src": "starship.toml",
+        "dest": f"{CONFIG_DIR}/starship.toml",
+        "deps": [],
+        # "TODO": Find shell, and give instructions for installation
+        "setup": None,
+    },
+    "nix-darwin": {
+        "platforms": ["darwin"],
+        "src": "nix-darwin",
+        "dest": f"{CONFIG_DIR}/nix-darwin",
+        "deps": [],
+        "setup": None,
+    }
+}
 
 def symlink(source, target):
     if os.path.exists(target):
@@ -53,21 +81,8 @@ def main():
         print_help()
     command = sys.argv[1]
 
-    configurations = [
-        'nvim',
-        'alacritty',
-        'ghostty',
-    ]
-
-    if sys.platform == 'darwin':
-        configurations += [
-            'aerospace',
-            'sketchybar',
-            'skhd',
-        ]
-
     if command == 'list':
-        print(configurations)
+        print(CONFIGURATIONS)
         sys.exit(0)
 
     if command == 'install':
