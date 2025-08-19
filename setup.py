@@ -16,6 +16,7 @@ def get_config_dir():
 
 CONFIG_DIR = get_config_dir()
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+HOME_DIR = os.path.expanduser("~")
 # TODO: Read env variable and or arguments
 
 @dataclass
@@ -44,6 +45,13 @@ CONFIGURATIONS: dict[str, Configuration] = {
         dest=f"{CONFIG_DIR}/starship.toml",
         deps=[],
         # TODO=Find shell, and give instructions for installation
+        setup=None,
+    ),
+    "tmux": Configuration(
+        platforms=[],
+        src=".tmux.conf",
+        dest=f"{HOME_DIR}/.tmux.conf",
+        deps=[],
         setup=None,
     ),
     "nix-darwin": Configuration(
