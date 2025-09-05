@@ -31,6 +31,14 @@ class Configuration:
         return len(self.platforms) == 0 or (PLATFORM in self.platforms)
 
 CONFIGURATIONS: dict[str, Configuration] = {
+    "nvim_nvchad": Configuration(
+        platforms=[],
+        src="nvim_nvchad",
+        dest=f"{CONFIG_DIR}/nvim",
+        deps=[],
+        # Additional setup function
+        setup=None,
+    ),
     "nvim": Configuration(
         platforms=[],
         src="nvim",
