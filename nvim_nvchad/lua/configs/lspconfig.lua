@@ -20,7 +20,22 @@ local function read_rust_analyzer_config()
     end
 end
 
-local lspconfig = require("lspconfig")
-lspconfig['rust_analyzer'].setup({
-  settings = read_rust_analyzer_config(),
+local function choose_clangd()
+  -- prefer explicit name; vim.fn.executable returns 1 if on PATH
+  if vim.fn.executable("starm-clangd") == 1 then
+    return {"starm-clangd",
+      "--query-driver=/opt/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32/bin/,/opt/ST/STM32CubeCLT_1.19.0/st-arm-clang/bin/"}
+  end
+  -- fallback to whatever (mason clangd or system clangd)
+  return {"clangd"}
+end
+
+vim.lsp.config('clangd', {
+  cmd = choose_clangd(),
 })
+
+vim.lsp.config('rust_analyzer', {
+  settings = read_rust_analyzer_config()
+})
+
+vim.lsp.enable('rust_analyzer')
