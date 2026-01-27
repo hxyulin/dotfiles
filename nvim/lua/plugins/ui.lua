@@ -1,0 +1,2 @@
+---@type lazy.PluginSpec[]
+return {}

@@ -111,8 +111,7 @@ def main():
         sys.exit(1)
     command = sys.argv[1]
 
-    match command:
-        case 'list':
+    if command == 'list':
             unavailable: int = 0
             for name,conf in CONFIGURATIONS.items():
                 if not conf.is_available():
@@ -121,7 +120,7 @@ def main():
                 print(name)
             print(f"... and {unavailable} more not supported for the current platform")
             sys.exit(0)
-        case 'info':
+    elif command == 'info':
             if len(sys.argv) < 3:
                 print("requires configuration name")
                 sys.exit(1)
@@ -130,7 +129,7 @@ def main():
                 conf = CONFIGURATIONS[name]
                 print(f"Configuration '{name}'")
                 if len(conf.platforms) != 0:
-                    print(f"Available for platforms: {",".join(conf.platforms)}")
+                    print(f"Available for platforms: {','.join(conf.platforms)}")
                 else:
                     print(f"Available for all platforms")
                 print(f"Configuration destination: '{conf.dest}'")
@@ -138,7 +137,7 @@ def main():
                 print("invalid configuration")
                 sys.exit(1)
             sys.exit(0)
-        case 'install':
+    elif command == 'install':
             if len(sys.argv) < 3:
                 print("installing all configurations...")
                 for name,conf in CONFIGURATIONS.items():
@@ -154,7 +153,7 @@ def main():
                     print("invalid configuration")
                     sys.exit(1)
                 sys.exit(0)
-        case 'uninstall' | 'remove':
+    elif command in ['uninstall', 'remove']:
             if len(sys.argv) < 3:
                 if input("are you sure you want to remove all configurations? Y/n").lower() == 'n':
                     print("cancelled")
@@ -173,7 +172,7 @@ def main():
                     sys.exit(1)
                 sys.exit(0)
 
-        case _:
+    else:
             print("invalid subcommand")
 
 if __name__ == '__main__':

@@ -1,41 +1,41 @@
 return {
-  {
-    "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
-    opts = require "configs.conform",
-  },
+    {
+        "stevearc/conform.nvim",
+        -- event = 'BufWritePre', -- uncomment for format on save
+        opts = require "configs.conform",
+    },
 
-  -- These are some examples, uncomment them if you want to see them work!
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      require "configs.lspconfig"
-    end,
-  },
+    -- These are some examples, uncomment them if you want to see them work!
+    {
+        "neovim/nvim-lspconfig",
+        config = function()
+            require "configs.lspconfig"
+        end,
+    },
 
-  {
-      "mason-org/mason-lspconfig.nvim",
-      lazy = false,
-      opts = {
-          automatic_enable = {
-              exclude = {
-                  "rust_analyzer"
-              }
-          }
-      },
-      dependencies = {
-          { "mason-org/mason.nvim", opts = {} },
-          "neovim/nvim-lspconfig",
-      },
-  },
+    {
+        "mason-org/mason-lspconfig.nvim",
+        lazy = false,
+        opts = {
+            automatic_enable = {
+                exclude = {
+                    "rust_analyzer",
+                },
+            },
+        },
+        dependencies = {
+            { "mason-org/mason.nvim", opts = {} },
+            "neovim/nvim-lspconfig",
+        },
+    },
 
-  -- test new blink
-  -- { import = "nvchad.blink.lazyspec" },
+    -- test new blink
+    -- { import = "nvchad.blink.lazyspec" },
 
-  {
-  	"nvim-treesitter/nvim-treesitter",
-  	opts = {},
-  },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        opts = {},
+    },
     {
         "mbbill/undotree",
         cmd = "UndotreeToggle",
@@ -58,11 +58,6 @@ return {
     {
         "theHamsta/nvim-dap-virtual-text",
     },
-
-    {
-        "wakatime/vim-wakatime",
-        lazy = false,
-    },
     {
         "editorconfig/editorconfig-vim",
         lazy = false,
@@ -70,7 +65,11 @@ return {
     {
         "hrsh7th/nvim-cmp",
         config = function()
-            require("configs.cmp")
+            require "configs.cmp"
         end,
+    },
+    {
+        "github/copilot.vim",
+        lazy = false,
     },
 }

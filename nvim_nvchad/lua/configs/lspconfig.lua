@@ -22,10 +22,13 @@ end
 
 local function choose_clangd()
   -- prefer explicit name; vim.fn.executable returns 1 if on PATH
-  if vim.fn.executable("starm-clangd") == 1 then
-    return {"starm-clangd",
-      "--query-driver=/opt/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32/bin/,/opt/ST/STM32CubeCLT_1.19.0/st-arm-clang/bin/"}
-  end
+  -- if vim.fn.executable("starm-clangd") == 1 then
+  --   return {
+  --     "starm-clangd",
+  --     "--query-driver=/opt/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc,/opt/ST/STM32CubeCLT_1.19.0/st-arm-clang/bin/starm-clang",
+  --     "--log=verbose",
+  --   }
+  -- end
   -- fallback to whatever (mason clangd or system clangd)
   return {"clangd"}
 end

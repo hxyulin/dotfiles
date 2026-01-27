@@ -1,5 +1,5 @@
 {
-  description = "Example nix-darwin system flake";
+  description = "hxyulin nix-darwin system flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -20,6 +20,9 @@
 
       # Necessary for using flakes on this system.
       nix.settings.experimental-features = "nix-command flakes";
+      
+      # auto optimize the store
+      nix.optimise.automatic = true;
 
       # Enable alternative shell support in nix-darwin.
       # programs.fish.enable = true;
@@ -36,6 +39,12 @@
       nixpkgs.hostPlatform = "aarch64-darwin";
 
       system.defaults = {
+        CustomUserPreferences = {
+          "com.apple.AdLib" = {
+            allowApplePersonalizedAdvertising = false;
+          };
+        };
+
         # Disable mouse accel
         ".GlobalPreferences"."com.apple.mouse.scaling" = -1.0;
         NSGlobalDomain.AppleInterfaceStyle = "Dark";
@@ -48,14 +57,9 @@
         WindowManager.EnableStandardClickToShowDesktop = false;
 
         controlcenter.BatteryShowPercentage = true;
-        dock.persistent-apps = [
-          {
-            app = "/Applications/Zen.app";
-          }
-          {
-            app = "/Applications/Ghostty.app";
-          }
-        ];
+
+        dock.mru-spaces = false;
+        dock.persistent-apps = [];
         dock.persistent-others = [];
         dock.show-recents = false;
         dock.wvous-bl-corner = 1;
@@ -63,19 +67,26 @@
         dock.wvous-tl-corner = 1;
         dock.wvous-tr-corner = 1;
         dock.tilesize = 48;
+
         finder.AppleShowAllExtensions = true;
         finder.AppleShowAllFiles = true;
+        finder.FXPreferredViewStyle = "clmv";
+        finder.ShowPathbar = true;
+        finder.ShowStatusBar = true;
         finder.NewWindowTarget = "Home";
         finder.ShowExternalHardDrivesOnDesktop = false;
         finder.ShowHardDrivesOnDesktop = false;
         finder.ShowRemovableMediaOnDesktop = false;
+
         hitoolbox.AppleFnUsageType = "Do Nothing";
         menuExtraClock.Show24Hour = true;
 
+        trackpad.Clicking = true;
+        trackpad.TrackpadThreeFingerDrag = true;
+
         screencapture.location = "~/Pictures/Screenshots";
+        screensaver.askForPasswordDelay = 0;
         
-        dock.mru-spaces = false;
-        finder.FXPreferredViewStyle = "clmv";
         loginwindow.GuestEnabled = false;
       };
 
@@ -100,9 +111,17 @@
           "btop"
           "fastfetch"
         ];
+        masApps = {
+          Xcode = 497799835;
+          WeChat = 836500024;
+        };
       };
 
-      networking.localHostName = "HxyulinMac";
+      networking.localHostName = "hxyulin-mac";
+      networking.dns = [
+        "8.8.8.8"
+        "8.8.4.4"
+      ];
 
       power.sleep = {
         computer = 60;
@@ -115,8 +134,8 @@
   in
   {
     # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#hxyulins-MacBook-Pro
-    darwinConfigurations."HxyulinMac" = nix-darwin.lib.darwinSystem {
+    # $ darwin-rebuild build --flake .#hxyulin-mac
+    darwinConfigurations."hxyulin-mac" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [ configuration ];
     };

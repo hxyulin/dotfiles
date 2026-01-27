@@ -6,7 +6,8 @@ vim.g.maplocalleader = " "
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  local out =
+    vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -19,13 +20,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- options
-require("options")
--- keymaps
-require("keymaps")
--- autocmds
-require("autocmd")
-
 -- lazy config
 require("lazy").setup({
   spec = {
@@ -35,4 +29,26 @@ require("lazy").setup({
   install = { colorscheme = { "habamax" } },
   -- disable automatic check for plugin updates
   checker = { enabled = false },
+  rocks = {
+    enabled = false,
+  },
+  -- disable neovim plugin for performance
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "gzip",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
+  },
 })
+
+require("config.options")
+require("config.keymaps")
+require("config.autocmd")
