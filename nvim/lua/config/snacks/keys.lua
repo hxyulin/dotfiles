@@ -78,4 +78,72 @@ return {
     end,
     desc = "File explorer",
   },
+  -- Git Integration
+  {
+    "<leader>gg",
+    function()
+      Snacks.lazygit()
+    end,
+    desc = "LazyGit",
+  },
+  {
+    "<leader>gb",
+    function()
+      Snacks.gitbrowse()
+    end,
+    desc = "Git browse (open in browser)",
+  },
+  {
+    "<leader>gf",
+    function()
+      Snacks.lazygit.log_file()
+    end,
+    desc = "LazyGit current file history",
+  },
+  {
+    "<leader>gL",
+    function()
+      Snacks.lazygit.log()
+    end,
+    desc = "LazyGit log",
+  },
+  -- Terminal
+  {
+    "<leader>h",
+    function()
+      Snacks.terminal()
+    end,
+    desc = "Toggle terminal",
+    mode = { "n", "t" },
+  },
+  -- Scratch Buffers
+  {
+    "<leader>n",
+    function()
+      Snacks.scratch()
+    end,
+    desc = "Open scratch buffer",
+  },
+  {
+    "<leader>N",
+    function()
+      Snacks.scratch.select()
+    end,
+    desc = "Select scratch buffer",
+  },
+  -- Notifications
+  {
+    "<leader>un",
+    function()
+      Snacks.notifier.hide()
+    end,
+    desc = "Dismiss all notifications",
+  },
+  {
+    "<leader>nh",
+    function()
+      Snacks.notifier.show_history()
+    end,
+    desc = "Show notification history",
+  },
 }

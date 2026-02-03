@@ -1,4 +1,4 @@
--- @type lazy.PluginSpec[]
+---@type lazy.PluginSpec[]
 return {
   {
     "folke/snacks.nvim",

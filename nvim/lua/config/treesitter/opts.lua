@@ -1,3 +1,5 @@
+--- Treesitter configuration
+---@type TSConfig
 return {
   ensure_installed = {
     "lua",

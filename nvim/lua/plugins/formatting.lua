@@ -1,3 +1,5 @@
+--- Code formatting configuration with conform.nvim
+---@type lazy.PluginSpec[]
 return {
   {
     "stevearc/conform.nvim",

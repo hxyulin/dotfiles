@@ -1,3 +1,7 @@
+---@diagnostic disable: missing-fields
+--- Neovim options configuration
+--- Sets up tab behavior, UI, and search preferences
+
 --- Tab
 -- number of visual spaces per tab
 vim.opt.tabstop = 4

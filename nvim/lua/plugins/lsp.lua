@@ -1,4 +1,4 @@
---- @module lazy
+---@type lazy.PluginSpec[]
 return {
   {
     "neovim/nvim-lspconfig",

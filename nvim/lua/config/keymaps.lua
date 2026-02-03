@@ -1,3 +1,4 @@
+---@type fun(mode: string|string[], lhs: string, rhs: string|function, opts?: vim.keymap.set.Opts)
 local map = vim.keymap.set
 
 -- Use ; to start commands in normal

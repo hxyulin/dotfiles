@@ -1,5 +1,4 @@
--- @module lazy
--- @type PluginSpec[]
+---@type lazy.PluginSpec[]
 return {
   {
     "nvim-treesitter/nvim-treesitter",
