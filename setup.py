@@ -3,6 +3,7 @@
 import sys
 import os
 import platform
+import shutil
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Tuple, Callable
 
@@ -266,6 +267,48 @@ def _clear_lines(n):
     _write("\033[2K\r")
 
 
+# ---------------------------------------------------------------------------
+# ANSI escape constants
+# ---------------------------------------------------------------------------
+
+ESC_ALT_SCREEN_ON = "\033[?1049h"
+ESC_ALT_SCREEN_OFF = "\033[?1049l"
+ESC_CURSOR_HOME = "\033[H"
+ESC_CLEAR_SCREEN = "\033[2J"
+ESC_HIDE_CURSOR = "\033[?25l"
+ESC_SHOW_CURSOR = "\033[?25h"
+ESC_BOLD = "\033[1m"
+ESC_DIM = "\033[2m"
+ESC_REVERSE = "\033[7m"
+ESC_RESET = "\033[0m"
+ESC_GREEN = "\033[32m"
+ESC_RED = "\033[31m"
+ESC_YELLOW = "\033[33m"
+ESC_CYAN = "\033[36m"
+
+
+# ---------------------------------------------------------------------------
+# Config status detection
+# ---------------------------------------------------------------------------
+
+
+def get_config_status(name, conf):
+    # type: (str, Configuration) -> str
+    if not conf.is_available():
+        return "unavailable"
+    dest = conf.dest
+    if os.path.islink(dest):
+        source = os.path.join(SCRIPT_DIR, conf.src)
+        if os.path.realpath(dest) == os.path.realpath(source):
+            return "installed"
+        else:
+            return "conflict"
+    elif os.path.exists(dest):
+        return "conflict"
+    else:
+        return "not_installed"
+
+
 class MultiSelect:
     """Arrow-key driven multi-select widget."""
 
@@ -477,6 +520,42 @@ def confirm_continue(message):
 
 
 # ---------------------------------------------------------------------------
+# Dashboard widgets
+# ---------------------------------------------------------------------------
+
+
+class MenuSelect:
+    """Single-select vertical menu with highlight-and-enter."""
+
+    def __init__(self, items):
+        # type: (List[str]) -> None
+        self.items = items
+        self.cursor = 0
+
+    def render(self):
+        # type: () -> List[str]
+        lines = []  # type: List[str]
+        for i, item in enumerate(self.items):
+            if i == self.cursor:
+                lines.append("  {}{}> {}{}".format(ESC_REVERSE, ESC_BOLD, item, ESC_RESET))
+            else:
+                lines.append("    {}".format(item))
+        return lines
+
+    def handle_key(self, key):
+        # type: (str) -> Optional[int]
+        if key == "up":
+            self.cursor = (self.cursor - 1) % len(self.items)
+        elif key == "down":
+            self.cursor = (self.cursor + 1) % len(self.items)
+        elif key == "enter":
+            return self.cursor
+        elif key in ("q", "Q"):
+            return -1
+        return None
+
+
+# ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
 
@@ -663,6 +742,422 @@ def _print_summary(succeeded, failed, verb):
 
 
 # ---------------------------------------------------------------------------
+# Interactive TUI dashboard
+# ---------------------------------------------------------------------------
+
+
+class DashboardApp:
+    """Full-screen interactive TUI for managing dotfile configurations."""
+
+    def __init__(self):
+        # type: () -> None
+        self._cols = 80
+        self._rows = 24
+
+    def _refresh_size(self):
+        # type: () -> None
+        size = shutil.get_terminal_size((80, 24))
+        self._cols = size.columns
+        self._rows = size.lines
+
+    def _clear(self):
+        # type: () -> None
+        _write(ESC_CURSOR_HOME + ESC_CLEAR_SCREEN)
+
+    def _draw(self, lines):
+        # type: (List[str]) -> None
+        self._refresh_size()
+        self._clear()
+        output = "\r\n".join(lines[: self._rows])
+        _write(output)
+
+    def _header(self, title=""):
+        # type: (str) -> List[str]
+        lines = []  # type: List[str]
+        lines.append("{}{}  Dotfiles Setup  {}".format(ESC_BOLD, ESC_CYAN, ESC_RESET))
+        if title:
+            lines.append("  {}{}{}".format(ESC_DIM, title, ESC_RESET))
+        lines.append("  " + "\u2500" * min(40, self._cols - 4))
+        lines.append("")
+        return lines
+
+    # -- entry point --------------------------------------------------------
+
+    def run(self):
+        # type: () -> None
+        if not supports_ansi_tui():
+            self._run_simple_fallback()
+            return
+        _write(ESC_ALT_SCREEN_ON + ESC_HIDE_CURSOR)
+        try:
+            with RawTerminal():
+                self._main_menu()
+        finally:
+            _write(ESC_SHOW_CURSOR + ESC_ALT_SCREEN_OFF)
+
+    # -- main menu ----------------------------------------------------------
+
+    def _main_menu(self):
+        # type: () -> None
+        menu = MenuSelect(["Status", "Install", "Uninstall", "Info", "Quit"])
+        while True:
+            available = get_available_configs()
+            installed = sum(
+                1 for n, c in available if get_config_status(n, c) == "installed"
+            )
+            total = len(available)
+
+            lines = self._header()
+            lines.append(
+                "  {}{}/{}{}  configs installed".format(ESC_GREEN, installed, total, ESC_RESET)
+            )
+            lines.append("")
+            lines.extend(menu.render())
+            lines.append("")
+            lines.append(
+                "  {}\u2191\u2193 navigate  ENTER select  Q quit{}".format(ESC_DIM, ESC_RESET)
+            )
+            self._draw(lines)
+
+            key = read_key()
+            result = menu.handle_key(key)
+            if result is None:
+                continue
+            if result == 0:
+                self._view_status()
+            elif result == 1:
+                self._view_install()
+            elif result == 2:
+                self._view_uninstall()
+            elif result == 3:
+                self._view_info()
+            elif result == 4 or result == -1:
+                return
+
+    # -- status view --------------------------------------------------------
+
+    def _view_status(self):
+        # type: () -> None
+        all_configs = list(CONFIGURATIONS.items())
+        cursor = 0
+
+        while True:
+            lines = self._header("Status")
+
+            status_lines = []  # type: List[Tuple[str, str, str]]
+            for name, conf in all_configs:
+                status = get_config_status(name, conf)
+                if status == "installed":
+                    icon = "{}\u25cf{}".format(ESC_GREEN, ESC_RESET)
+                    label = "installed"
+                elif status == "not_installed":
+                    icon = "\u25cb"
+                    label = "not installed"
+                elif status == "conflict":
+                    icon = "{}!{}".format(ESC_YELLOW, ESC_RESET)
+                    label = "conflict"
+                else:
+                    icon = "{}\u2500{}".format(ESC_DIM, ESC_RESET)
+                    label = "unavailable"
+                status_lines.append((name, icon, label))
+
+            max_name = max(len(s[0]) for s in status_lines)
+            for i, (name, icon, label) in enumerate(status_lines):
+                line = "  {} {}  {}".format(icon, name.ljust(max_name), label)
+                if i == cursor:
+                    line = "{}{}{}".format(ESC_REVERSE, line, ESC_RESET)
+                lines.append(line)
+
+            lines.append("")
+            lines.append(
+                "  {}\u2191\u2193 navigate  ENTER detail  Q back{}".format(ESC_DIM, ESC_RESET)
+            )
+            self._draw(lines)
+
+            key = read_key()
+            if key == "up":
+                cursor = (cursor - 1) % len(all_configs)
+            elif key == "down":
+                cursor = (cursor + 1) % len(all_configs)
+            elif key == "enter":
+                name, conf = all_configs[cursor]
+                self._show_config_detail(name, conf)
+            elif key in ("q", "Q", "escape"):
+                return
+
+    def _show_config_detail(self, name, conf):
+        # type: (str, Configuration) -> None
+        status = get_config_status(name, conf)
+        source = os.path.join(SCRIPT_DIR, conf.src)
+
+        lines = self._header("Detail: {}".format(name))
+        lines.append("  Name:        {}".format(name))
+        lines.append("  Status:      {}".format(status))
+        lines.append("  Source:      {}".format(source))
+        lines.append("  Dest:        {}".format(conf.dest))
+        if conf.platforms:
+            lines.append("  Platforms:   {}".format(", ".join(conf.platforms)))
+        else:
+            lines.append("  Platforms:   all")
+        if os.path.islink(conf.dest):
+            lines.append("  Link target: {}".format(os.readlink(conf.dest)))
+        lines.append("")
+        lines.append("  {}Press any key to go back{}".format(ESC_DIM, ESC_RESET))
+        self._draw(lines)
+        read_key()
+
+    # -- install view -------------------------------------------------------
+
+    def _view_install(self):
+        # type: () -> None
+        available = get_available_configs()
+        uninstalled = [
+            (n, c)
+            for n, c in available
+            if get_config_status(n, c) != "installed"
+        ]
+        if not uninstalled:
+            self._show_message("All configs are already installed.")
+            return
+
+        items = [(n, c.dest) for n, c in uninstalled]
+        selected = set()  # type: set
+        cursor = 0
+
+        while True:
+            lines = self._header("Install")
+            lines.append("  Select configurations to install:")
+            lines.append("")
+
+            max_name = max(len(item[0]) for item in items)
+            for i, (name, dest) in enumerate(items):
+                check = "x" if i in selected else " "
+                prefix = "> " if i == cursor else "  "
+                line = "{}[{}] {}  {}".format(prefix, check, name.ljust(max_name), dest)
+                if i == cursor:
+                    line = "{}{}{}".format(ESC_REVERSE, line, ESC_RESET)
+                lines.append("  {}".format(line))
+
+            lines.append("")
+            lines.append("  {} of {} selected".format(len(selected), len(items)))
+            lines.append("")
+            lines.append(
+                "  {}\u2191\u2193 navigate  SPACE toggle  A all  ENTER confirm  Q back{}".format(
+                    ESC_DIM, ESC_RESET
+                )
+            )
+            self._draw(lines)
+
+            key = read_key()
+            if key == "up":
+                cursor = (cursor - 1) % len(items)
+            elif key == "down":
+                cursor = (cursor + 1) % len(items)
+            elif key == "space":
+                if cursor in selected:
+                    selected.discard(cursor)
+                else:
+                    selected.add(cursor)
+            elif key in ("a", "A"):
+                if len(selected) == len(items):
+                    selected.clear()
+                else:
+                    selected = set(range(len(items)))
+            elif key == "enter":
+                if not selected:
+                    self._show_message("Nothing selected.")
+                    continue
+                results = []  # type: List[str]
+                for idx in sorted(selected):
+                    name = uninstalled[idx][0]
+                    conf = uninstalled[idx][1]
+                    ok, err = install(conf)
+                    if ok:
+                        results.append(
+                            "{}\u2713{} {}".format(ESC_GREEN, ESC_RESET, name)
+                        )
+                    else:
+                        results.append(
+                            "{}\u2717{} {}: {}".format(ESC_RED, ESC_RESET, name, err)
+                        )
+                self._show_message("\n".join(results))
+                return
+            elif key in ("q", "Q", "escape"):
+                return
+
+    # -- uninstall view -----------------------------------------------------
+
+    def _view_uninstall(self):
+        # type: () -> None
+        available = get_available_configs()
+        installed_list = [
+            (n, c)
+            for n, c in available
+            if get_config_status(n, c) == "installed"
+        ]
+        if not installed_list:
+            self._show_message("No configs are currently installed.")
+            return
+
+        items = [(n, c.dest) for n, c in installed_list]
+        selected = set()  # type: set
+        cursor = 0
+
+        while True:
+            lines = self._header("Uninstall")
+            lines.append("  Select configurations to uninstall:")
+            lines.append("")
+
+            max_name = max(len(item[0]) for item in items)
+            for i, (name, dest) in enumerate(items):
+                check = "x" if i in selected else " "
+                prefix = "> " if i == cursor else "  "
+                line = "{}[{}] {}  {}".format(prefix, check, name.ljust(max_name), dest)
+                if i == cursor:
+                    line = "{}{}{}".format(ESC_REVERSE, line, ESC_RESET)
+                lines.append("  {}".format(line))
+
+            lines.append("")
+            lines.append("  {} of {} selected".format(len(selected), len(items)))
+            lines.append("")
+            lines.append(
+                "  {}\u2191\u2193 navigate  SPACE toggle  A all  ENTER confirm  Q back{}".format(
+                    ESC_DIM, ESC_RESET
+                )
+            )
+            self._draw(lines)
+
+            key = read_key()
+            if key == "up":
+                cursor = (cursor - 1) % len(items)
+            elif key == "down":
+                cursor = (cursor + 1) % len(items)
+            elif key == "space":
+                if cursor in selected:
+                    selected.discard(cursor)
+                else:
+                    selected.add(cursor)
+            elif key in ("a", "A"):
+                if len(selected) == len(items):
+                    selected.clear()
+                else:
+                    selected = set(range(len(items)))
+            elif key == "enter":
+                if not selected:
+                    self._show_message("Nothing selected.")
+                    continue
+                results = []  # type: List[str]
+                for idx in sorted(selected):
+                    name = installed_list[idx][0]
+                    conf = installed_list[idx][1]
+                    ok, err = uninstall(conf)
+                    if ok:
+                        results.append(
+                            "{}\u2713{} {}".format(ESC_GREEN, ESC_RESET, name)
+                        )
+                    else:
+                        results.append(
+                            "{}\u2717{} {}: {}".format(ESC_RED, ESC_RESET, name, err)
+                        )
+                self._show_message("\n".join(results))
+                return
+            elif key in ("q", "Q", "escape"):
+                return
+
+    # -- info view ----------------------------------------------------------
+
+    def _view_info(self):
+        # type: () -> None
+        all_configs = list(CONFIGURATIONS.items())
+        cursor = 0
+
+        while True:
+            lines = self._header("Info")
+            lines.append("  Select a configuration:")
+            lines.append("")
+
+            for i, (name, _conf) in enumerate(all_configs):
+                if i == cursor:
+                    lines.append(
+                        "  {}{}> {}{}".format(ESC_REVERSE, ESC_BOLD, name, ESC_RESET)
+                    )
+                else:
+                    lines.append("    {}".format(name))
+
+            lines.append("")
+            lines.append(
+                "  {}\u2191\u2193 navigate  ENTER select  Q back{}".format(ESC_DIM, ESC_RESET)
+            )
+            self._draw(lines)
+
+            key = read_key()
+            if key == "up":
+                cursor = (cursor - 1) % len(all_configs)
+            elif key == "down":
+                cursor = (cursor + 1) % len(all_configs)
+            elif key == "enter":
+                name, conf = all_configs[cursor]
+                self._show_config_detail(name, conf)
+            elif key in ("q", "Q", "escape"):
+                return
+
+    # -- message overlay ----------------------------------------------------
+
+    def _show_message(self, message):
+        # type: (str) -> None
+        lines = self._header("Result")
+        for line in message.split("\n"):
+            lines.append("  {}".format(line))
+        lines.append("")
+        lines.append("  {}Press any key to continue{}".format(ESC_DIM, ESC_RESET))
+        self._draw(lines)
+        read_key()
+
+    # -- simple fallback (non-ANSI) -----------------------------------------
+
+    def _run_simple_fallback(self):
+        # type: () -> None
+        while True:
+            available = get_available_configs()
+            installed = sum(
+                1 for n, c in available if get_config_status(n, c) == "installed"
+            )
+            total = len(available)
+
+            print("\n  Dotfiles Setup  ({}/{} installed)".format(installed, total))
+            print("  1. Status")
+            print("  2. Install")
+            print("  3. Uninstall")
+            print("  4. Info")
+            print("  5. Quit")
+
+            try:
+                choice = input("\n> ").strip()
+            except EOFError:
+                return
+
+            if choice == "1":
+                for name, conf in CONFIGURATIONS.items():
+                    status = get_config_status(name, conf)
+                    print("  {} {}".format(name, status))
+            elif choice == "2":
+                cmd_install(names=None, interactive=False)
+            elif choice == "3":
+                cmd_uninstall(names=None, interactive=False)
+            elif choice == "4":
+                try:
+                    name = input("Config name: ").strip()
+                except EOFError:
+                    continue
+                if name in CONFIGURATIONS:
+                    cmd_info(name)
+                else:
+                    print("Unknown config: {}".format(name))
+            elif choice in ("5", "q", "Q"):
+                return
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -671,12 +1166,8 @@ def main():
     args = sys.argv[1:]
 
     if not args:
-        name = sys.argv[0]
-        print("Usage: {} install [configuration] [--no-interactive]".format(name))
-        print("Usage: {} uninstall [configuration] [--no-interactive]".format(name))
-        print("Usage: {} info <configuration>".format(name))
-        print("Usage: {} list".format(name))
-        sys.exit(1)
+        DashboardApp().run()
+        return
 
     command = args[0]
     rest = args[1:]
@@ -710,6 +1201,6 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         # Restore terminal and exit cleanly
-        _write("\033[?25h")
+        _write(ESC_SHOW_CURSOR + ESC_ALT_SCREEN_OFF)
         print("\nCancelled.")
         sys.exit(130)

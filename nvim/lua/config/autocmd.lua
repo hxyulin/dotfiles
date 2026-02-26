@@ -38,7 +38,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end, "Format Document")
     map("n", "<leader>li", "<cmd>LspInfo<cr>", "LSP Info")
     map("n", "<leader>lR", "<cmd>LspRestart<cr>", "Restart LSP")
-    map("n", "<leader>lc", "<cmd>ClangdSelect<cr>", "Select Clangd Executable")
+    map("n", "<leader>lb", "<cmd>LspSelectBinary<cr>", "Select LSP Binary")
 
     -- Legacy keybinds (kept for muscle memory)
     map("n", "<F2>", vim.lsp.buf.rename, "Rename Symbol")
