@@ -19,6 +19,35 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 -- 24-bit color
 vim.opt.termguicolors = true
+-- always show signcolumn to prevent layout shift
+vim.opt.signcolumn = "yes"
+-- keep lines visible above/below cursor
+vim.opt.scrolloff = 8
+vim.opt.sidescrolloff = 8
+-- open new splits to right and below
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+-- sync with system clipboard
+vim.opt.clipboard = "unnamedplus"
+-- faster CursorHold / swap write
+vim.opt.updatetime = 250
+-- faster which-key popup
+vim.opt.timeoutlen = 300
+
+-- show substitution preview in a split
+vim.opt.inccommand = "split"
+-- highlight current line
+vim.opt.cursorline = true
+-- enable mouse in all modes
+vim.opt.mouse = "a"
+-- don't show mode in cmdline (lualine handles it)
+vim.opt.showmode = false
+-- enable smart indenting on new lines
+vim.opt.smartindent = true
+-- line wrapping off by default
+vim.opt.wrap = false
+-- minimum window width for number column
+vim.opt.numberwidth = 4
 
 --- Searching
 -- search as characters are entered
@@ -33,5 +62,4 @@ vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 
-vim.opt.termguicolors = true
 vim.opt.undofile = true

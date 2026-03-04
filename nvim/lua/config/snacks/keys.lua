@@ -109,7 +109,7 @@ return {
   },
   -- Terminal
   {
-    "<leader>h",
+    "<leader>tt",
     function()
       Snacks.terminal()
     end,
@@ -118,14 +118,14 @@ return {
   },
   -- Scratch Buffers
   {
-    "<leader>n",
+    "<leader>ns",
     function()
       Snacks.scratch()
     end,
     desc = "Open scratch buffer",
   },
   {
-    "<leader>N",
+    "<leader>nS",
     function()
       Snacks.scratch.select()
     end,

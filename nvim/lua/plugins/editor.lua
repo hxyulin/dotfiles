@@ -55,7 +55,19 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts = {},
+    opts = {
+      spec = {
+        { "<leader>f", group = "Find" },
+        { "<leader>g", group = "Git" },
+        { "<leader>h", group = "Harpoon" },
+        { "<leader>d", group = "Debug" },
+        { "<leader>a", group = "AI/Sidekick" },
+        { "<leader>l", group = "LSP" },
+        { "<leader>x", group = "Trouble" },
+        { "<leader>n", group = "Notes" },
+        { "<leader>t", group = "Terminal" },
+      },
+    },
     keys = {
       {
         "<leader>?",
@@ -68,8 +80,43 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
-    opts = {},
-    lazy = false,
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      on_attach = function(buf)
+        local gs = require("gitsigns")
+        local function map(mode, lhs, rhs, desc)
+          vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc })
+        end
+
+        -- Navigation
+        map("n", "]c", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "]c", bang = true })
+          else
+            gs.nav_hunk("next")
+          end
+        end, "Next Hunk")
+        map("n", "[c", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "[c", bang = true })
+          else
+            gs.nav_hunk("prev")
+          end
+        end, "Prev Hunk")
+
+        -- Actions
+        map({ "n", "v" }, "<leader>gs", gs.stage_hunk, "Stage Hunk")
+        map({ "n", "v" }, "<leader>gr", gs.reset_hunk, "Reset Hunk")
+        map("n", "<leader>gS", gs.stage_buffer, "Stage Buffer")
+        map("n", "<leader>gu", gs.undo_stage_hunk, "Undo Stage Hunk")
+        map("n", "<leader>gR", gs.reset_buffer, "Reset Buffer")
+        map("n", "<leader>gp", gs.preview_hunk, "Preview Hunk")
+        map("n", "<leader>gB", function()
+          gs.blame_line({ full = true })
+        end, "Blame Line (Full)")
+        map("n", "<leader>gl", gs.toggle_current_line_blame, "Toggle Line Blame")
+      end,
+    },
   },
   {
     "dzfrias/arena.nvim",
@@ -93,6 +140,16 @@ return {
     keys = function()
       return require("config.todo-comments.keys")
     end,
-    opts = {}
-  }
+    opts = {},
+  },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose" },
+    keys = {
+      { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diffview Open" },
+      { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File History (Current)" },
+      { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "File History (All)" },
+      { "<leader>gc", "<cmd>DiffviewClose<cr>", desc = "Diffview Close" },
+    },
+  },
 }

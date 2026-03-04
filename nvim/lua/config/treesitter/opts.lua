@@ -5,6 +5,15 @@ return {
     "lua",
     "vim",
     "vimdoc",
+    "c",
+    "cpp",
+    "rust",
+    "markdown",
+    "markdown_inline",
+    "json",
+    "yaml",
+    "toml",
+    "bash",
   },
 
   highlight = {
