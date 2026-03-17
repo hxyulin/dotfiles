@@ -1,0 +1,14 @@
+# Guard: return early if non-interactive (agents, scripts that force-source .zshrc)
+[[ $- != *i* ]] && return
+
+# Starship prompt
+command -v starship &> /dev/null && eval "$(starship init zsh)"
+
+# prj-cli
+command -v prj &> /dev/null && eval "$(prj init zsh --cmd pj)"
+
+# Aliases
+command -v exa &> /dev/null && alias ls=exa
+
+# Zoxide
+command -v zoxide &> /dev/null && eval "$(zoxide init zsh --cmd cd)"

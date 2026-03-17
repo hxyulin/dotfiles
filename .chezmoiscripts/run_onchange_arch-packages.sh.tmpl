@@ -1,0 +1,8 @@
+{{- if .isCachyOS -}}
+#!/bin/bash
+# pacman-packages hash: {{ include "dot_config/pacman-packages.txt" | sha256sum }}
+set -euo pipefail
+echo "Installing pacman packages..."
+# Strip comments and empty lines, install
+grep -v '^#' ~/.config/pacman-packages.txt | grep -v '^\s*$' | sudo pacman -S --needed --noconfirm -
+{{- end }}

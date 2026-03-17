@@ -1,0 +1,42 @@
+{{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "macos-personal" "macos-work" "cachyos" "ubuntu-wsl" "windows") -}}
+{{- $email := promptStringOnce . "email" "Git email address" -}}
+
+{{- /* Derived settings based on profile */ -}}
+{{- $isDarwin := hasPrefix "macos" $profile -}}
+{{- $isPersonal := eq $profile "macos-personal" -}}
+{{- $isCachyOS := eq $profile "cachyos" -}}
+{{- $isWSL := eq $profile "ubuntu-wsl" -}}
+
+{{- /* Font settings */ -}}
+{{- $fontFamily := "JetBrainsMono Nerd Font" -}}
+{{- if $isDarwin -}}
+{{-   $fontFamily = "JetbrainsMono NFM" -}}
+{{- end -}}
+{{- $fontSize := 12 -}}
+{{- if $isCachyOS -}}
+{{-   $fontSize = 10 -}}
+{{- end -}}
+
+[data]
+  profile = {{ $profile | quote }}
+  email = {{ $email | quote }}
+  fontSize = {{ $fontSize }}
+  fontFamily = {{ $fontFamily | quote }}
+
+  # Platform flags
+  isDarwin = {{ $isDarwin }}
+  isPersonal = {{ $isPersonal }}
+  isCachyOS = {{ $isCachyOS }}
+  isWSL = {{ $isWSL }}
+
+  # Feature flags
+  nixDarwin = {{ and $isDarwin $isPersonal }}
+  homebrew = {{ $isDarwin }}
+  hyprland = {{ $isCachyOS }}
+  sway = {{ $isCachyOS }}
+
+[age]
+  # Recipients list — add each machine's public key here
+  # Generate with: age-keygen -o ~/.config/chezmoi/key.txt
+  # identity = "~/.config/chezmoi/key.txt"
+  # recipients = ["age1..."]

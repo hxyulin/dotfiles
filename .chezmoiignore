@@ -1,0 +1,26 @@
+# Repo files not managed by chezmoi
+README.md
+CLAUDE.md
+LICENSE
+docs/
+install.sh
+
+# Platform-conditional exclusions
+{{- if not .isDarwin }}
+dot_config/nix-darwin/
+dot_Brewfile
+{{- end }}
+
+{{- if not .nixDarwin }}
+dot_config/nix-darwin/
+{{- end }}
+
+{{- if not .isCachyOS }}
+dot_config/hypr/
+dot_config/sway/
+dot_config/pacman-packages.txt
+{{- end }}
+
+{{- if not .isDarwin }}
+dot_zprofile
+{{- end }}

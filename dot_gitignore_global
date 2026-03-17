@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Environment
+.env
+.env.local
+
+# Build artifacts
+*.o
+*.so
+*.dylib

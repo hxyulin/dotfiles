@@ -1,0 +1,18 @@
+#!/bin/bash
+# cargo-packages hash: {{ include "dot_config/cargo-packages.txt" | sha256sum }}
+set -euo pipefail
+
+if ! command -v cargo &>/dev/null; then
+  echo "cargo not found, skipping cargo packages"
+  exit 0
+fi
+
+if [ ! -f ~/.config/cargo-packages.txt ]; then
+  echo "cargo-packages.txt not found yet, skipping"
+  exit 0
+fi
+
+echo "Installing cargo packages..."
+grep -v '^#' ~/.config/cargo-packages.txt | grep -v '^\s*$' | while read -r pkg; do
+  cargo install "$pkg" 2>/dev/null || true
+done

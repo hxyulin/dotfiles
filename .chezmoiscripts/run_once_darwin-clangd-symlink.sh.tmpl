@@ -1,0 +1,14 @@
+{{- if .isDarwin -}}
+#!/bin/bash
+set -euo pipefail
+
+# macOS clangd reads from ~/Library/Preferences/clangd/ instead of ~/.config/clangd/
+MACOS_CLANGD="$HOME/Library/Preferences/clangd"
+CONFIG_CLANGD="$HOME/.config/clangd"
+
+if [ -d "$CONFIG_CLANGD" ] && [ ! -L "$MACOS_CLANGD" ] && [ ! -d "$MACOS_CLANGD" ]; then
+  echo "Creating clangd symlink for macOS..."
+  mkdir -p "$(dirname "$MACOS_CLANGD")"
+  ln -s "$CONFIG_CLANGD" "$MACOS_CLANGD"
+fi
+{{- end }}

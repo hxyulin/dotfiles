@@ -1,0 +1,21 @@
+#!/bin/bash
+set -euo pipefail
+
+if command -v age &>/dev/null; then
+  exit 0
+fi
+
+echo "Installing age encryption tool..."
+{{- if .isDarwin }}
+brew install age
+{{- else if .isCachyOS }}
+sudo pacman -S --needed --noconfirm age
+{{- else }}
+# Fallback: install from source
+if command -v cargo &>/dev/null; then
+  cargo install rage
+else
+  echo "Please install age manually: https://github.com/FiloSottile/age"
+  exit 1
+fi
+{{- end }}

@@ -1,0 +1,7 @@
+{{- if .homebrew -}}
+#!/bin/bash
+# Brewfile hash: {{ include "dot_Brewfile" | sha256sum }}
+set -euo pipefail
+echo "Installing Homebrew packages..."
+brew bundle --file=~/.Brewfile
+{{- end }}

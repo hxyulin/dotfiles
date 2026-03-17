@@ -1,0 +1,28 @@
+[user]
+  name = hxyulin
+  email = {{ .email }}
+{{- if .isPersonal }}
+  signingkey = ~/.ssh/id_ed25519.pub
+
+[gpg]
+  format = ssh
+
+[commit]
+  gpgsign = true
+
+[tag]
+  gpgsign = true
+{{- end }}
+
+[init]
+  defaultBranch = main
+
+[core]
+  excludesfile = ~/.gitignore_global
+  editor = nvim
+
+[pull]
+  rebase = true
+
+[push]
+  autoSetupRemote = true

@@ -1,0 +1,19 @@
+# Core CLI tools
+starship
+zoxide
+exa
+ripgrep
+fd
+bat
+jq
+age
+
+# Neovim
+neovim
+
+# Fonts
+ttf-jetbrains-mono-nerd
+
+# Desktop (CachyOS)
+hyprland
+sway

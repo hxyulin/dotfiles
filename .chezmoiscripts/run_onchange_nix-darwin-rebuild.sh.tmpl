@@ -1,0 +1,11 @@
+{{- if .nixDarwin -}}
+#!/bin/bash
+# flake.nix hash: {{ include "dot_config/nix-darwin/flake.nix" | sha256sum }}
+set -euo pipefail
+if [ ! -f ~/.config/nix-darwin/flake.nix ]; then
+  echo "nix-darwin flake not found yet, skipping"
+  exit 0
+fi
+echo "Rebuilding nix-darwin..."
+sudo darwin-rebuild switch --flake ~/.config/nix-darwin
+{{- end }}

@@ -2,39 +2,80 @@
 
 ## Setup
 
-Configs are managed via `setup.py` which creates symlinks from this repo into `~/.config` (or `%APPDATA%` on Windows).
+Dotfiles are managed with [chezmoi](https://chezmoi.io).
 
+### Bootstrap (new machine)
 ```bash
-python3 setup.py list              # show available configs for this platform
-python3 setup.py info <config>     # show details for a config
-python3 setup.py install [config]  # install one or all configs (symlinks)
-python3 setup.py uninstall [config] # remove symlinks only
+curl -fsSL https://raw.githubusercontent.com/hxyulin/dotfiles/main/install.sh | bash
 ```
 
-Nix-darwin (macOS system config):
+### Common Commands
 ```bash
-sudo darwin-rebuild switch --flake ~/.config/nix-darwin/flake.nix
+chezmoi apply              # apply all configs
+chezmoi diff               # preview changes before applying
+chezmoi edit <file>        # edit a managed config
+chezmoi add <file>         # add a new file to chezmoi
+chezmoi managed            # list all managed files
+chezmoi doctor             # health check
+chezmoi cd                 # cd to chezmoi source directory
 ```
+
+### Machine Profiles
+On `chezmoi init`, the user selects a profile: `macos-personal`, `macos-work`, `cachyos`, `ubuntu-wsl`, or `windows`. This drives feature flags and template values (font size, font family, platform-specific blocks).
+
+Config: `~/.config/chezmoi/chezmoi.toml` (generated from `.chezmoi.toml.tmpl`)
 
 ## Repository Layout
 
+This repo IS the chezmoi source directory (`~/.local/share/chezmoi/`).
+
 ```
-aerospace/       AeroSpace window manager (aerospace.toml)
-alacritty/       Alacritty terminal (Ayu Dark theme)
-ghostty/         Ghostty terminal
-nix-darwin/      Nix-darwin flake (aarch64-darwin, homebrew integration)
-nvim/            Neovim config (primary — Lazy.nvim)
-nvim_nvchad/     Alternative NvChad-based config
-sketchybar/      Status bar (sketchybarrc, items/, plugins/)
-skhd/            Simple Hotkey Daemon
-.tmux.conf       Tmux (tpm, resurrect, yank)
-starship.toml    Starship prompt
-setup.py         Symlink manager
+.chezmoi.toml.tmpl          Machine profile template (prompts + feature flags)
+.chezmoiignore              Platform-conditional file exclusions
+install.sh                  Bootstrap script (installs chezmoi + age)
+
+dot_config/
+├── aerospace/              macOS only — AeroSpace window manager
+├── alacritty/              Alacritty terminal (templated — font varies)
+├── cargo-packages.txt      Cargo install list
+├── clangd/                 ClangD config
+├── ghostty/                Ghostty terminal (templated — font, titlebar)
+├── hypr/                   CachyOS only — Hyprland (placeholder)
+├── nix-darwin/             macOS-personal only — Nix-darwin flake
+├── nvim/                   Neovim config (Lazy.nvim, cross-platform)
+├── pacman-packages.txt     Arch/CachyOS package list
+├── sketchybar/             macOS only — Status bar
+├── starship.toml           Starship prompt
+├── skhd/                   macOS only — Hotkey daemon
+├── sway/                   CachyOS only — Sway (placeholder)
+
+dot_Brewfile                macOS Homebrew packages
+dot_gitconfig.tmpl          Git config (templated — email, signing)
+dot_gitignore_global        Global gitignore
+dot_tmux.conf               Tmux config
+dot_zshrc                   Zsh interactive config
+dot_zshenv.tmpl             Zsh env (templated — pnpm path macOS-only)
+dot_zprofile.tmpl           Zsh profile (templated — homebrew macOS-only)
+
+private_dot_ssh/            SSH config (templated)
+.chezmoiscripts/            Auto-run scripts (package install, nix rebuild)
 ```
 
-Platform-aware: `setup.py` detects Darwin/Linux/Windows and adjusts config paths. Some configs (e.g. nix-darwin) are platform-specific.
+### Templated Files (`.tmpl`)
+Files ending in `.tmpl` use Go template syntax. Template data comes from `.chezmoi.toml.tmpl`:
+- `{{ .fontFamily }}`, `{{ .fontSize }}` — font settings per platform
+- `{{ .isDarwin }}`, `{{ .isCachyOS }}`, etc. — platform conditionals
+- `{{ .email }}`, `{{ .isPersonal }}` — identity/profile settings
 
-## Neovim Config Architecture (nvim/)
+### Chezmoi Naming Conventions
+- `dot_` prefix → `.` in target (e.g., `dot_config/` → `~/.config/`)
+- `private_` prefix → restricted permissions
+- `encrypted_` prefix → age-encrypted files
+- `.tmpl` suffix → Go template processing
+- `run_onchange_` scripts → re-run when content hash changes
+- `run_once_` scripts → run only on first apply
+
+## Neovim Config Architecture (dot_config/nvim/)
 
 Entry point: `init.lua` — sets leader to space, bootstraps Lazy.nvim, loads config modules.
 
@@ -61,8 +102,8 @@ Plugin config pattern: plugin specs in `plugins/` reference opts/keys from `conf
 
 ## Conventions
 
-- **Lua formatting**: stylua — 100 column width, 2-space indent, double quotes, sorted requires (`nvim/.stylua.toml`)
-- **Editor config**: 4-space default; 2-space for JS/TS/JSON/Lua (`nvim/.editorconfig`)
+- **Lua formatting**: stylua — 100 column width, 2-space indent, double quotes, sorted requires (`dot_config/nvim/dot_stylua.toml`)
+- **Editor config**: 4-space default; 2-space for JS/TS/JSON/Lua (`dot_config/nvim/dot_editorconfig`)
 - **Colorscheme**: Cyberdream (Neovim), Ayu Dark (Alacritty)
-- **Font**: JetBrains Mono Nerd Font everywhere (installed via nix, configured in ghostty/alacritty/sketchybar)
-- **macOS system**: dark mode, tap-to-click, three-finger drag, nvim as default editor (see `nix-darwin/flake.nix`)
+- **Font**: JetBrains Mono Nerd Font everywhere (templated per platform)
+- **macOS system**: dark mode, tap-to-click, three-finger drag, nvim as default editor (see `dot_config/nix-darwin/flake.nix`)

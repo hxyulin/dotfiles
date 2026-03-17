@@ -1,0 +1,9 @@
+{{- if .isCachyOS -}}
+# Sway configuration — CachyOS
+# TODO: populate with actual config
+
+set $mod Mod4
+set $term ghostty
+
+font pango:{{ .fontFamily }} {{ .fontSize }}
+{{- end }}

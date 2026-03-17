@@ -1,0 +1,17 @@
+# CLI tools
+brew "starship"
+brew "zoxide"
+brew "eza"
+brew "ripgrep"
+brew "fd"
+brew "bat"
+brew "jq"
+brew "age"
+brew "bob"
+
+# Fonts
+cask "font-jetbrains-mono-nerd-font"
+
+# Applications
+cask "ghostty"
+cask "alacritty"
