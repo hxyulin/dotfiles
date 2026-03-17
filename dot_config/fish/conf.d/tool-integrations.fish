@@ -13,7 +13,7 @@ if command -q fnm
     fnm env --use-on-cd --shell fish | source
 end
 
-# prj-cli
-if command -q prj
-    prj init fish --cmd pj | source
-end
+# prj-cli (no fish support yet)
+# if command -q prj
+#     prj init fish --cmd pj | source
+# end
