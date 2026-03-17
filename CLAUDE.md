@@ -21,7 +21,9 @@ chezmoi cd                 # cd to chezmoi source directory
 ```
 
 ### Machine Profiles
-On `chezmoi init`, the user selects a profile: `macos-personal`, `macos-work`, `cachyos`, `ubuntu-wsl`, or `windows`. This drives feature flags and template values (font size, font family, platform-specific blocks).
+On `chezmoi init`, the user selects a profile: `macbook`, `arch`, or `ubuntu`. This drives feature flags and template values (font size, font family, platform-specific blocks).
+
+Flags: `isDarwin` (macbook), `isArch` (arch), `isUbuntu` (ubuntu), `isLinux` (arch or ubuntu)
 
 Config: `~/.config/chezmoi/chezmoi.toml` (generated from `.chezmoi.toml.tmpl`)
 
@@ -32,40 +34,46 @@ This repo IS the chezmoi source directory (`~/.local/share/chezmoi/`).
 ```
 .chezmoi.toml.tmpl          Machine profile template (prompts + feature flags)
 .chezmoiignore              Platform-conditional file exclusions
-install.sh                  Bootstrap script (installs chezmoi + age)
+install.sh                  Bootstrap script (installs chezmoi + rustup + age)
 
 dot_config/
 ├── aerospace/              macOS only — AeroSpace window manager
 ├── alacritty/              Alacritty terminal (templated — font varies)
-├── cargo-packages.txt      Cargo install list
+├── apt-packages.txt        Ubuntu package list
+├── cargo-packages.txt.tmpl Cargo install list (templated — ubuntu gets extras)
 ├── clangd/                 ClangD config
+├── fish/                   Fish shell config (all platforms)
+│   ├── config.fish         Interactive guard, greeting
+│   └── conf.d/             Auto-loaded config snippets
 ├── ghostty/                Ghostty terminal (templated — font, titlebar)
-├── hypr/                   CachyOS only — Hyprland (placeholder)
-├── nix-darwin/             macOS-personal only — Nix-darwin flake
+├── hypr/                   Arch only — Hyprland (placeholder)
+├── nix-darwin/             macOS only — Nix-darwin flake
 ├── nvim/                   Neovim config (Lazy.nvim, cross-platform)
-├── pacman-packages.txt     Arch/CachyOS package list
+├── pacman-packages.txt     Arch package list
 ├── sketchybar/             macOS only — Status bar
 ├── starship.toml           Starship prompt
 ├── skhd/                   macOS only — Hotkey daemon
-├── sway/                   CachyOS only — Sway (placeholder)
+├── sway/                   Arch only — Sway (placeholder)
 
 dot_Brewfile                macOS Homebrew packages
-dot_gitconfig.tmpl          Git config (templated — email, signing)
+dot_gitconfig.tmpl          Git config (templated — email, signing, delta)
 dot_gitignore_global        Global gitignore
 dot_tmux.conf               Tmux config
-dot_zshrc                   Zsh interactive config
-dot_zshenv.tmpl             Zsh env (templated — pnpm path macOS-only)
-dot_zprofile.tmpl           Zsh profile (templated — homebrew macOS-only)
+dot_zshrc                   Zsh interactive config (history, completion, aliases)
+dot_bashrc                  Bash interactive config (history, completion, aliases)
+dot_zshenv.tmpl             Zsh env (templated — cargo, fnm, bob paths)
+dot_zprofile.tmpl           Zsh profile (templated — homebrew/linuxbrew)
+dot_bash_profile.tmpl       Bash profile (templated — paths, homebrew/linuxbrew)
 
 private_dot_ssh/            SSH config (templated)
-.chezmoiscripts/            Auto-run scripts (package install, nix rebuild)
+.chezmoiscripts/            Auto-run scripts (package install, rustup, fnm, nix rebuild)
 ```
 
 ### Templated Files (`.tmpl`)
 Files ending in `.tmpl` use Go template syntax. Template data comes from `.chezmoi.toml.tmpl`:
 - `{{ .fontFamily }}`, `{{ .fontSize }}` — font settings per platform
-- `{{ .isDarwin }}`, `{{ .isCachyOS }}`, etc. — platform conditionals
-- `{{ .email }}`, `{{ .isPersonal }}` — identity/profile settings
+- `{{ .isDarwin }}`, `{{ .isArch }}`, `{{ .isUbuntu }}`, `{{ .isLinux }}` — platform conditionals
+- `{{ .email }}` — identity settings
 
 ### Chezmoi Naming Conventions
 - `dot_` prefix → `.` in target (e.g., `dot_config/` → `~/.config/`)

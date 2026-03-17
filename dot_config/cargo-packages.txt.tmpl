@@ -1,0 +1,16 @@
+# Cargo-installed tools
+prj-cli
+{{- if .isUbuntu }}
+# Ubuntu-only: not available via apt
+starship
+du-dust
+dufs
+procs
+sd
+tokei
+hyperfine
+tealdeer
+just
+watchexec-cli
+zoxide
+{{- end }}

@@ -1,4 +1,4 @@
-{{- if .isCachyOS -}}
+{{- if .isArch -}}
 #!/bin/bash
 # pacman-packages hash: {{ include "dot_config/pacman-packages.txt" | sha256sum }}
 set -euo pipefail

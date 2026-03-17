@@ -8,7 +8,7 @@ fi
 echo "Installing age encryption tool..."
 {{- if .isDarwin }}
 brew install age
-{{- else if .isCachyOS }}
+{{- else if .isArch }}
 sudo pacman -S --needed --noconfirm age
 {{- else }}
 # Fallback: install from source

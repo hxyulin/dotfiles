@@ -1,0 +1,37 @@
+# Cargo
+if test -f "$HOME/.cargo/env"
+    source "$HOME/.cargo/env"
+end
+if test -d "$HOME/.cargo/bin"
+    fish_add_path "$HOME/.cargo/bin"
+end
+
+# Bob (neovim version manager)
+if test -d "$HOME/.local/share/bob/nvim-bin"
+    fish_add_path "$HOME/.local/share/bob/nvim-bin"
+end
+
+# fnm (Fast Node Manager)
+if test -d "$HOME/.local/share/fnm"
+    fish_add_path "$HOME/.local/share/fnm"
+end
+
+# Local binaries
+fish_add_path "$HOME/.local/bin"
+
+# Editor
+set -gx EDITOR nvim
+{{- if .isDarwin }}
+
+# Homebrew (macOS)
+if test -x /opt/homebrew/bin/brew
+    eval (/opt/homebrew/bin/brew shellenv)
+end
+{{- end }}
+{{- if .isUbuntu }}
+
+# Linuxbrew (optional)
+if test -x /home/linuxbrew/.linuxbrew/bin/brew
+    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+end
+{{- end }}

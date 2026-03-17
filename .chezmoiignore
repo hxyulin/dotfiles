@@ -11,16 +11,12 @@ dot_config/nix-darwin/
 dot_Brewfile
 {{- end }}
 
-{{- if not .nixDarwin }}
-dot_config/nix-darwin/
-{{- end }}
-
-{{- if not .isCachyOS }}
+{{- if not .isArch }}
 dot_config/hypr/
 dot_config/sway/
 dot_config/pacman-packages.txt
 {{- end }}
 
-{{- if not .isDarwin }}
-dot_zprofile
+{{- if not .isUbuntu }}
+dot_config/apt-packages.txt
 {{- end }}

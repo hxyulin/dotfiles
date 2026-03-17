@@ -1,0 +1,25 @@
+{{- if .isUbuntu -}}
+#!/bin/bash
+# apt-packages hash: {{ include "dot_config/apt-packages.txt" | sha256sum }}
+set -euo pipefail
+echo "Installing apt packages..."
+
+# Add eza repository
+if [ ! -f /etc/apt/keyrings/gierens.gpg ]; then
+  sudo mkdir -p /etc/apt/keyrings
+  wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+  sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+fi
+
+sudo apt-get update
+grep -v '^#' ~/.config/apt-packages.txt | grep -v '^\s*$' | xargs sudo apt-get install -y
+
+# Install eza (from added repo)
+sudo apt-get install -y eza
+
+# Install zoxide (not in apt)
+if ! command -v zoxide &>/dev/null; then
+  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+fi
+{{- end }}

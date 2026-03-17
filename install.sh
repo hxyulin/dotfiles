@@ -16,6 +16,13 @@ if ! command -v chezmoi &>/dev/null; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
+# --- Install rustup ---
+if ! command -v rustup &>/dev/null; then
+  echo "Installing rustup..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
+  . "$HOME/.cargo/env"
+fi
+
 # --- Install age ---
 if ! command -v age &>/dev/null; then
   echo "Installing age..."

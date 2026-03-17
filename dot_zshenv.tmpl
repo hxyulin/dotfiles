@@ -7,14 +7,8 @@ export EDITOR=nvim
 # Bob (neovim version manager)
 [[ -f "$HOME/.local/share/bob/env/env.sh" ]] && . "$HOME/.local/share/bob/env/env.sh"
 
+# fnm (Fast Node Manager)
+export PATH="$HOME/.local/share/fnm:$PATH"
+
 # Local binaries (pipx, etc.)
 export PATH="$HOME/.local/bin:$PATH"
-{{- if .isDarwin }}
-
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-{{- end }}

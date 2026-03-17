@@ -1,7 +1,7 @@
 # Core CLI tools
 starship
 zoxide
-exa
+eza
 ripgrep
 fd
 bat
@@ -9,13 +9,24 @@ jq
 age
 dust
 btop
+procs
+sd
+tokei
+hyperfine
+git-delta
+tealdeer
+just
+watchexec
+fnm
+fish
 
 # Neovim
 neovim
+bob
 
 # Fonts
 ttf-jetbrains-mono-nerd
 
-# Desktop (CachyOS)
+# Desktop
 hyprland
 sway

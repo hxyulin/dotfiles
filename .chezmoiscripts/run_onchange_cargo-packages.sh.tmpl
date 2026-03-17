@@ -1,5 +1,5 @@
 #!/bin/bash
-# cargo-packages hash: {{ include "dot_config/cargo-packages.txt" | sha256sum }}
+# cargo-packages hash: {{ include "dot_config/cargo-packages.txt.tmpl" | sha256sum }}
 set -euo pipefail
 
 if ! command -v cargo &>/dev/null; then

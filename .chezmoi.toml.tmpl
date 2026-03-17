@@ -1,11 +1,11 @@
-{{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "macos-personal" "macos-work" "cachyos" "ubuntu-wsl" "windows") -}}
+{{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "macbook" "arch" "ubuntu") -}}
 {{- $email := promptStringOnce . "email" "Git email address" -}}
 
 {{- /* Derived settings based on profile */ -}}
-{{- $isDarwin := hasPrefix "macos" $profile -}}
-{{- $isPersonal := eq $profile "macos-personal" -}}
-{{- $isCachyOS := eq $profile "cachyos" -}}
-{{- $isWSL := eq $profile "ubuntu-wsl" -}}
+{{- $isDarwin := eq $profile "macbook" -}}
+{{- $isArch := eq $profile "arch" -}}
+{{- $isUbuntu := eq $profile "ubuntu" -}}
+{{- $isLinux := or $isArch $isUbuntu -}}
 
 {{- /* Font settings */ -}}
 {{- $fontFamily := "JetBrainsMono Nerd Font" -}}
@@ -13,7 +13,7 @@
 {{-   $fontFamily = "JetbrainsMono NFM" -}}
 {{- end -}}
 {{- $fontSize := 12 -}}
-{{- if $isCachyOS -}}
+{{- if $isArch -}}
 {{-   $fontSize = 10 -}}
 {{- end -}}
 
@@ -25,15 +25,16 @@
 
   # Platform flags
   isDarwin = {{ $isDarwin }}
-  isPersonal = {{ $isPersonal }}
-  isCachyOS = {{ $isCachyOS }}
-  isWSL = {{ $isWSL }}
+  isArch = {{ $isArch }}
+  isUbuntu = {{ $isUbuntu }}
+  isLinux = {{ $isLinux }}
 
   # Feature flags
-  nixDarwin = {{ and $isDarwin $isPersonal }}
+  nixDarwin = {{ $isDarwin }}
   homebrew = {{ $isDarwin }}
-  hyprland = {{ $isCachyOS }}
-  sway = {{ $isCachyOS }}
+  gitSigning = {{ $isDarwin }}
+  hyprland = {{ $isArch }}
+  sway = {{ $isArch }}
 
 [age]
   # Recipients list — add each machine's public key here

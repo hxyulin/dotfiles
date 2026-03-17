@@ -1,14 +1,36 @@
 # Guard: return early if non-interactive
 [[ $- != *i* ]] && return
 
-# Starship prompt
-command -v starship &> /dev/null && eval "$(starship init bash)"
+# --- History ---
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTCONTROL=ignoreboth:erasedups
+shopt -s histappend
 
-# prj-cli
+# --- Terminal ---
+shopt -s checkwinsize
+
+# --- Completion ---
+if [[ -f /etc/bash_completion ]]; then
+  . /etc/bash_completion
+elif [[ -f /usr/share/bash-completion/bash_completion ]]; then
+  . /usr/share/bash-completion/bash_completion
+elif [[ -f /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
+  . /opt/homebrew/etc/profile.d/bash_completion.sh
+fi
+
+# --- Tool integrations ---
+command -v starship &> /dev/null && eval "$(starship init bash)"
+command -v zoxide &> /dev/null && eval "$(zoxide init bash --cmd cd)"
+command -v fnm &> /dev/null && eval "$(fnm env --use-on-cd --shell bash)"
 command -v prj &> /dev/null && eval "$(prj init bash --cmd pj)"
 
-# Aliases
-command -v eza &> /dev/null && alias ls=eza || command -v exa &> /dev/null && alias ls=exa
-
-# Zoxide
-command -v zoxide &> /dev/null && eval "$(zoxide init bash --cmd cd)"
+# --- Aliases ---
+if command -v eza &> /dev/null; then
+  alias ls='eza'
+  alias la='eza -la'
+  alias lt='eza --tree'
+fi
+command -v bat &> /dev/null && alias cat='bat'
+command -v dust &> /dev/null && alias du='dust'
+command -v procs &> /dev/null && alias ps='procs'

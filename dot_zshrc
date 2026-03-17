@@ -1,14 +1,41 @@
-# Guard: return early if non-interactive (agents, scripts that force-source .zshrc)
+# Guard: return early if non-interactive
 [[ $- != *i* ]] && return
 
-# Starship prompt
-command -v starship &> /dev/null && eval "$(starship init zsh)"
+# --- History ---
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt appendhistory sharehistory
+setopt hist_ignore_dups hist_ignore_space hist_reduce_blanks
 
-# prj-cli
+# --- Terminal ---
+setopt noflowcontrol
+
+# --- Completion ---
+autoload -Uz compinit && compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' menu select
+
+# --- Keybindings ---
+bindkey -e
+bindkey '^[[A' history-beginning-search-backward
+bindkey '^[[B' history-beginning-search-forward
+
+# --- Colors ---
+autoload -U colors && colors
+
+# --- Tool integrations ---
+command -v starship &> /dev/null && eval "$(starship init zsh)"
+command -v zoxide &> /dev/null && eval "$(zoxide init zsh --cmd cd)"
+command -v fnm &> /dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
 command -v prj &> /dev/null && eval "$(prj init zsh --cmd pj)"
 
-# Aliases
-command -v eza &> /dev/null && alias ls=eza || command -v exa &> /dev/null && alias ls=exa
-
-# Zoxide
-command -v zoxide &> /dev/null && eval "$(zoxide init zsh --cmd cd)"
+# --- Aliases ---
+if command -v eza &> /dev/null; then
+  alias ls='eza'
+  alias la='eza -la'
+  alias lt='eza --tree'
+fi
+command -v bat &> /dev/null && alias cat='bat'
+command -v dust &> /dev/null && alias du='dust'
+command -v procs &> /dev/null && alias ps='procs'

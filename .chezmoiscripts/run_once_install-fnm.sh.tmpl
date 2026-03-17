@@ -1,0 +1,11 @@
+{{- if .isUbuntu }}
+#!/bin/bash
+set -euo pipefail
+
+if command -v fnm &>/dev/null; then
+  exit 0
+fi
+
+echo "Installing fnm..."
+curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+{{- end }}

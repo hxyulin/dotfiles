@@ -1,0 +1,11 @@
+# Ubuntu packages
+bat
+ripgrep
+fd-find
+jq
+age
+btop
+fish
+curl
+git
+build-essential
