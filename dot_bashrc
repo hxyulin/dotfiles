@@ -1,0 +1,14 @@
+# Guard: return early if non-interactive
+[[ $- != *i* ]] && return
+
+# Starship prompt
+command -v starship &> /dev/null && eval "$(starship init bash)"
+
+# prj-cli
+command -v prj &> /dev/null && eval "$(prj init bash --cmd pj)"
+
+# Aliases
+command -v eza &> /dev/null && alias ls=eza || command -v exa &> /dev/null && alias ls=exa
+
+# Zoxide
+command -v zoxide &> /dev/null && eval "$(zoxide init bash --cmd cd)"

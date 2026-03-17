@@ -1,2 +1,4 @@
 # Cargo-installed tools
 prj-cli
+du-dust
+dufs

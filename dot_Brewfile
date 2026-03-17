@@ -8,6 +8,9 @@ brew "bat"
 brew "jq"
 brew "age"
 brew "bob"
+brew "dust"
+brew "dufs"
+brew "btop"
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
