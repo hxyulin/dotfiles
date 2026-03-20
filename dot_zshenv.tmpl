@@ -1,11 +1,14 @@
 # Editor
 export EDITOR=nvim
 
+# Ripgrep config
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
+
 # Cargo
 [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 
 # Bob (neovim version manager)
-[[ -f "$HOME/.local/share/bob/env/env.sh" ]] && . "$HOME/.local/share/bob/env/env.sh"
+[[ -d "$HOME/.local/share/bob/nvim-bin" ]] && export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 
 # fnm (Fast Node Manager)
 export PATH="$HOME/.local/share/fnm:$PATH"

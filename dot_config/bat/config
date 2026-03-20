@@ -1,0 +1,14 @@
+# Bat configuration
+# See: bat --help
+
+# Use plain style (no line numbers, headers, grid) — less noisy for piped output
+--style="numbers,changes"
+
+# Set theme
+--theme="Coldark-Dark"
+
+# Use italic text on the terminal
+--italic-text=always
+
+# Don't use a pager for short output
+--paging=auto

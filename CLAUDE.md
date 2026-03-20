@@ -37,25 +37,27 @@ This repo IS the chezmoi source directory (`~/.local/share/chezmoi/`).
 install.sh                  Bootstrap script (installs chezmoi + rustup + age)
 
 dot_config/
-├── aerospace/              macOS only — AeroSpace window manager
-├── alacritty/              Alacritty terminal (templated — font varies)
 ├── apt-packages.txt        Ubuntu package list
+├── bat/                    Bat (cat replacement) config
+├── btop/                   Btop system monitor config
 ├── cargo-packages.txt.tmpl Cargo install list (templated — ubuntu gets extras)
 ├── clangd/                 ClangD config
+├── fd/                     fd (find replacement) ignore patterns
 ├── fish/                   Fish shell config (all platforms)
 │   ├── config.fish         Interactive guard, greeting
 │   └── conf.d/             Auto-loaded config snippets
+├── atuin/                  Shell history config
+├── lazygit/                Git TUI config (delta pager integration)
+├── yazi/                   Terminal file manager config
 ├── ghostty/                Ghostty terminal (templated — font, titlebar)
 ├── hypr/                   Arch only — Hyprland (placeholder)
 ├── nix-darwin/             macOS only — Nix-darwin flake
 ├── nvim/                   Neovim config (Lazy.nvim, cross-platform)
 ├── pacman-packages.txt     Arch package list
-├── sketchybar/             macOS only — Status bar
+├── ripgrep/                Ripgrep config (smart-case, ignores)
 ├── starship.toml           Starship prompt
-├── skhd/                   macOS only — Hotkey daemon
 ├── sway/                   Arch only — Sway (placeholder)
 
-dot_Brewfile                macOS Homebrew packages
 dot_gitconfig.tmpl          Git config (templated — email, signing, delta)
 dot_gitignore_global        Global gitignore
 dot_tmux.conf               Tmux config
@@ -112,6 +114,6 @@ Plugin config pattern: plugin specs in `plugins/` reference opts/keys from `conf
 
 - **Lua formatting**: stylua — 100 column width, 2-space indent, double quotes, sorted requires (`dot_config/nvim/dot_stylua.toml`)
 - **Editor config**: 4-space default; 2-space for JS/TS/JSON/Lua (`dot_config/nvim/dot_editorconfig`)
-- **Colorscheme**: Cyberdream (Neovim), Ayu Dark (Alacritty)
+- **Colorscheme**: Cyberdream (Neovim)
 - **Font**: JetBrains Mono Nerd Font everywhere (templated per platform)
 - **macOS system**: dark mode, tap-to-click, three-finger drag, nvim as default editor (see `dot_config/nix-darwin/flake.nix`)

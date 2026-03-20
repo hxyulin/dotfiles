@@ -1,0 +1,21 @@
+# Ripgrep configuration
+# Set via RIPGREP_CONFIG_PATH=~/.config/ripgrep/config
+
+# Smart case: case-insensitive unless pattern has uppercase
+--smart-case
+
+# Follow symlinks
+--follow
+
+# Add line numbers
+--line-number
+
+# Sort by file path
+--sort=path
+
+# Ignore common non-code directories
+--glob=!.git/
+--glob=!node_modules/
+--glob=!target/
+--glob=!.direnv/
+--glob=!vendor/

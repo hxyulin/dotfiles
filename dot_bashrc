@@ -21,16 +21,24 @@ fi
 
 # --- Tool integrations ---
 command -v starship &> /dev/null && eval "$(starship init bash)"
-command -v zoxide &> /dev/null && eval "$(zoxide init bash --cmd cd)"
+command -v zoxide &> /dev/null && eval "$(zoxide init bash --cmd z)"
 command -v fnm &> /dev/null && eval "$(fnm env --use-on-cd --shell bash)"
 command -v prj &> /dev/null && eval "$(prj init bash --cmd pj)"
+command -v fzf &> /dev/null && eval "$(fzf --bash)"
+command -v atuin &> /dev/null && eval "$(atuin init bash)"
+
+# --- Functions ---
+function yy() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$(pwd)" ]; then
+        cd "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
 
 # --- Aliases ---
 if command -v eza &> /dev/null; then
-  alias ls='eza'
   alias la='eza -la'
   alias lt='eza --tree'
 fi
-command -v bat &> /dev/null && alias cat='bat'
-command -v dust &> /dev/null && alias du='dust'
-command -v procs &> /dev/null && alias ps='procs'

@@ -23,6 +23,7 @@
       
       # auto optimize the store
       nix.optimise.automatic = true;
+      nix.gc.automatic = true;
 
       # Enable alternative shell support in nix-darwin.
       # programs.fish.enable = true;
@@ -43,14 +44,49 @@
           "com.apple.AdLib" = {
             allowApplePersonalizedAdvertising = false;
           };
+          "com.apple.finder" = {
+            SidebarShowingiCloudDesktop = false;
+            FXICloudDriveEnabled = false;
+          };
+          "com.apple.symbolichotkeys" = {
+            AppleSymbolicHotKeys = {
+              "60" = { enabled = false; };  # Ctrl+Space — select previous input source
+              "64" = { enabled = false; };  # Cmd+Space — Spotlight search
+              "65" = { enabled = false; };  # Cmd+Alt+Space — Finder search window
+            };
+          };
         };
+
+        SoftwareUpdate.AutomaticallyInstallMacOSUpdates = false;
 
         # Disable mouse accel
         ".GlobalPreferences"."com.apple.mouse.scaling" = -1.0;
         NSGlobalDomain.AppleInterfaceStyle = "Dark";
         NSGlobalDomain.AppleInterfaceStyleSwitchesAutomatically = false;
+        NSGlobalDomain.ApplePressAndHoldEnabled = false;
+        NSGlobalDomain.NSAutomaticInlinePredictionEnabled = false;
+        NSGlobalDomain.NSNavPanelExpandedStateForSaveMode = true;
+        NSGlobalDomain.NSNavPanelExpandedStateForSaveMode2 = true;
+        NSGlobalDomain.PMPrintingExpandedStateForPrint = true;
+        NSGlobalDomain.PMPrintingExpandedStateForPrint2 = true;
+        NSGlobalDomain.NSDocumentSaveNewDocumentsToCloud = false;
+        NSGlobalDomain.NSWindowShouldDragOnGesture = true;
+        NSGlobalDomain.NSAutomaticWindowAnimationsEnabled = false;
         NSGlobalDomain.AppleShowAllExtensions = true;
         NSGlobalDomain.AppleShowAllFiles = true;
+
+        # Keyboard settings
+        NSGlobalDomain."com.apple.keyboard.fnState" = true;
+        NSGlobalDomain.AppleKeyboardUIMode = 3;
+        NSGlobalDomain.InitialKeyRepeat = 15;
+        NSGlobalDomain.KeyRepeat = 2;
+
+        # Disable auto-correction
+        NSGlobalDomain.NSAutomaticSpellingCorrectionEnabled = false;
+        NSGlobalDomain.NSAutomaticCapitalizationEnabled = false;
+        NSGlobalDomain.NSAutomaticPeriodSubstitutionEnabled = false;
+        NSGlobalDomain.NSAutomaticQuoteSubstitutionEnabled = false;
+        NSGlobalDomain.NSAutomaticDashSubstitutionEnabled = false;
 
         # Disable recent apps
         WindowManager.AutoHide = true;
@@ -76,7 +112,14 @@
         finder.NewWindowTarget = "Home";
         finder.ShowExternalHardDrivesOnDesktop = false;
         finder.ShowHardDrivesOnDesktop = false;
+        finder.ShowMountedServersOnDesktop = false;
         finder.ShowRemovableMediaOnDesktop = false;
+        finder.FXDefaultSearchScope = "SCcf";
+        finder.FXEnableExtensionChangeWarning = false;
+        finder.FXRemoveOldTrashItems = true;
+        finder._FXSortFoldersFirst = true;
+        finder._FXSortFoldersFirstOnDesktop = true;
+        finder.CreateDesktop = false;
 
         hitoolbox.AppleFnUsageType = "Do Nothing";
         menuExtraClock.Show24Hour = true;
@@ -88,7 +131,12 @@
         screensaver.askForPasswordDelay = 0;
         
         loginwindow.GuestEnabled = false;
+
+        LaunchServices.LSQuarantine = false;
+        universalaccess.reduceMotion = true;
       };
+
+      system.startup.chime = false;
 
       environment.variables = {
         EDITOR = "nvim";
@@ -102,14 +150,56 @@
         enable = true;
         casks = [
           "ghostty"
+          "raycast"
         ];
         brews = [
+          # Editors & shells
           "neovim"
-          "starship"
+          "fish"
+          # Dev tools
           "gh"
+          "just"
+          "watchexec"
+          "bob"
+          "fnm"
+          # CLI essentials
+          "starship"
           "zoxide"
+          "eza"
+          "ripgrep"
+          "fd"
+          "bat"
+          "jq"
+          "age"
+          "sd"
+          "git-delta"
+          # Fuzzy finding & shell history
+          "fzf"
+          "atuin"
+          # Git tools
+          "lazygit"
+          "difftastic"
+          "git-absorb"
+          # File management
+          "yazi"
+          # HTTP & networking
+          "xh"
+          "doggo"
+          "gping"
+          "bandwhich"
+          # Text processing
+          "grex"
+          # Terminal multiplexer
+          "zellij"
+          # System monitoring & info
           "btop"
+          "procs"
+          "dust"
+          "dufs"
+          "tokei"
+          "hyperfine"
           "fastfetch"
+          "tealdeer"
         ];
         masApps = {
           Xcode = 497799835;
@@ -118,10 +208,14 @@
       };
 
       networking.localHostName = "hxyulin-mac";
+      networking.knownNetworkServices = ["Wi-Fi"];
       networking.dns = [
         "8.8.8.8"
         "8.8.4.4"
       ];
+
+      networking.applicationFirewall.enable = true;
+      networking.applicationFirewall.enableStealthMode = true;
 
       power.sleep = {
         computer = 60;

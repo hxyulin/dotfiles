@@ -8,7 +8,6 @@ install.sh
 # Platform-conditional exclusions
 {{- if not .isDarwin }}
 dot_config/nix-darwin/
-dot_Brewfile
 {{- end }}
 
 {{- if not .isArch }}
