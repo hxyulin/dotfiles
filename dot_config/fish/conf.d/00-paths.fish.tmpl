@@ -23,6 +23,17 @@ set -gx EDITOR nvim
 set -gx RIPGREP_CONFIG_PATH "$HOME/.config/ripgrep/config"
 {{- if .isDarwin }}
 
+# Vulkan SDK (macOS / MoltenVK)
+if test -d "$HOME/VulkanSDK/1.4.350.1/macOS"
+    set -gx VULKAN_SDK "$HOME/VulkanSDK/1.4.350.1/macOS"
+    fish_add_path "$VULKAN_SDK/bin"
+    set -gx DYLD_LIBRARY_PATH "$VULKAN_SDK/lib" $DYLD_LIBRARY_PATH
+    set -gx VK_ADD_LAYER_PATH "$VULKAN_SDK/share/vulkan/explicit_layer.d"
+    set -gx VK_ICD_FILENAMES "$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
+    set -gx VK_DRIVER_FILES "$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
+    set -gx PKG_CONFIG_PATH "$VULKAN_SDK/lib/pkgconfig" $PKG_CONFIG_PATH
+end
+
 # Homebrew (macOS)
 if test -x /opt/homebrew/bin/brew
     eval (/opt/homebrew/bin/brew shellenv)

@@ -1,30 +1,9 @@
-# Editor
-export EDITOR=nvim
+# .bash_profile — login bash shells.
+#
+# All env/PATH/tool setup now lives in .bashrc (above its interactive
+# guard) so it loads for EVERY bash process. BASH_ENV makes
+# non-interactive bash (AI agents, scripts: `bash -c ...`) read it too.
+export BASH_ENV="$HOME/.bashrc"
 
-# Ripgrep config
-export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
-
-# Cargo
-[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
-
-# Bob (neovim version manager)
-[[ -d "$HOME/.local/share/bob/nvim-bin" ]] && export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
-
-# fnm (Fast Node Manager)
-export PATH="$HOME/.local/share/fnm:$PATH"
-
-# Local binaries (pipx, etc.)
-export PATH="$HOME/.local/bin:$PATH"
-{{- if .isDarwin }}
-
-# Homebrew (macOS)
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-{{- end }}
-{{- if .isUbuntu }}
-
-# Linuxbrew (optional)
-[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-{{- end }}
-
-# Source bashrc
+# Source bashrc (env + interactive setup for this login shell).
 [[ -f ~/.bashrc ]] && . ~/.bashrc

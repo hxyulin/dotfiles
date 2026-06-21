@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-sudo darwin-rebuild switch --flake ~/.config/nix-darwin/flake.nix
+# Build & switch the nix-darwin system configuration.
+sudo darwin-rebuild switch --flake ~/.config/nix-darwin#hxyulin-mac
