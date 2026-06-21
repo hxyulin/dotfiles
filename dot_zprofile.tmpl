@@ -1,8 +1,10 @@
 {{- if .isDarwin }}
-# Homebrew (macOS)
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-{{- end }}
-{{- if .isUbuntu }}
-# Linuxbrew (optional)
-[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# .zprofile — login zsh shells, after macOS /etc/zprofile.
+#
+# macOS /etc/zprofile runs path_helper AFTER .zshenv, which rebuilds PATH
+# and pushes system dirs (/usr/bin, …) ahead of Homebrew/cargo/local-bin.
+# Re-source the shared env here (now that path_helper has run) to restore
+# our intended precedence. `typeset -U path` from .zshenv keeps it
+# duplicate-free, so this is just a reorder, not a second set of entries.
+[ -f "$HOME/.config/shell/env.sh" ] && . "$HOME/.config/shell/env.sh"
 {{- end }}

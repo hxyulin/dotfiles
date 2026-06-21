@@ -61,21 +61,35 @@ dot_config/
 dot_gitconfig.tmpl          Git config (templated — email, signing, delta)
 dot_gitignore_global        Global gitignore
 dot_tmux.conf               Tmux config
+dot_config/shell/env.sh.tmpl  Shared env/PATH for bash & zsh (single source of truth)
 dot_zshrc                   Zsh interactive config (history, completion, aliases)
-dot_bashrc                  Bash interactive config (history, completion, aliases)
-dot_zshenv.tmpl             Zsh env (templated — cargo, fnm, bob paths)
-dot_zprofile.tmpl           Zsh profile (templated — homebrew/linuxbrew)
-dot_bash_profile.tmpl       Bash profile (templated — paths, homebrew/linuxbrew)
+dot_bashrc                  Bash interactive config (sources env.sh, then interactive)
+dot_zshenv.tmpl             Zsh env (typeset -U PATH, sources env.sh)
+dot_zprofile.tmpl           Zsh login (macOS: re-sources env.sh after path_helper)
+dot_bash_profile.tmpl       Bash login (sets BASH_ENV, sources .bashrc)
 
 private_dot_ssh/            SSH config (templated)
 .chezmoiscripts/            Auto-run scripts (package install, rustup, fnm, nix rebuild)
 ```
 
 ### Templated Files (`.tmpl`)
-Files ending in `.tmpl` use Go template syntax. Template data comes from `.chezmoi.toml.tmpl`:
+Files ending in `.tmpl` use Go template syntax. Template data comes from two sources:
+
+**`.chezmoi.toml.tmpl`** — prompted/derived, rendered only at `chezmoi init`:
 - `{{ .fontFamily }}`, `{{ .fontSize }}` — font settings per platform
 - `{{ .isDarwin }}`, `{{ .isArch }}`, `{{ .isUbuntu }}`, `{{ .isLinux }}` — platform conditionals
 - `{{ .email }}` — identity settings
+
+**`.chezmoidata.toml`** — static constants, read on EVERY operation (no re-init needed):
+- `{{ .vulkanVersion }}` — Vulkan SDK version; bump once, used by env.sh + fish
+
+### Shell env architecture
+`~/.config/shell/env.sh` is the single source of truth for env/PATH, shared by
+**bash and zsh** (fish keeps its own copy in `conf.d/` — different syntax):
+- `.zshenv` → `typeset -U PATH`, then sources `env.sh` (covers non-interactive `zsh -c`)
+- `.zprofile` (macOS) → re-sources `env.sh` after `path_helper` reorders PATH
+- `.bashrc` → sources `env.sh` above its interactive guard; `.bash_profile` sets
+  `BASH_ENV=~/.bashrc` so non-interactive `bash -c` (agents/scripts) get it too
 
 ### Chezmoi Naming Conventions
 - `dot_` prefix → `.` in target (e.g., `dot_config/` → `~/.config/`)

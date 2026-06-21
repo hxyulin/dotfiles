@@ -12,7 +12,30 @@ if [ ! -f ~/.config/cargo-packages.txt ]; then
   exit 0
 fi
 
-echo "Installing cargo packages..."
-grep -v '^#' ~/.config/cargo-packages.txt | grep -v '^\s*$' | while read -r pkg; do
-  cargo install "$pkg" 2>/dev/null || true
-done
+# Prefer cargo-binstall (prebuilt binaries — fast) when present;
+# otherwise fall back to building from source with a locked lockfile.
+if command -v cargo-binstall &>/dev/null; then
+  install_cmd=(cargo binstall --no-confirm)
+else
+  install_cmd=(cargo install --locked)
+fi
+
+# Crates already installed, so we skip them instead of rebuilding.
+# (awk, not grep, so an empty list isn't a pipefail/`set -e` failure.)
+installed="$(cargo install --list | awk '/^[^[:space:]]/ {print $1}')"
+
+failed=()
+while read -r pkg; do
+  [ -z "$pkg" ] && continue
+  if grep -qxF "$pkg" <<<"$installed"; then
+    echo "✓ $pkg (already installed)"
+    continue
+  fi
+  echo "Installing $pkg..."
+  "${install_cmd[@]}" "$pkg" || failed+=("$pkg")
+done < <(grep -v '^#' ~/.config/cargo-packages.txt | grep -v '^[[:space:]]*$')
+
+if [ "${#failed[@]}" -gt 0 ]; then
+  # Loud, but don't abort `chezmoi apply` over an optional tool.
+  echo "⚠️  Failed to install ${#failed[@]} cargo package(s): ${failed[*]}" >&2
+fi

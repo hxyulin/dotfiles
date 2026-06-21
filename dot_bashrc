@@ -1,42 +1,11 @@
 # ============================================================
 # Environment — loaded for ALL bash shells, including
 # non-interactive ones (AI agents, scripts) via BASH_ENV
-# (set in .bash_profile). Keep this section above the
-# interactive guard so `bash -c ...` gets the right PATH/tools.
+# (set in .bash_profile). Shared with zsh; the single source
+# of truth lives in ~/.config/shell/env.sh so `bash -c ...`
+# and `zsh -c ...` get identical PATH/tools.
 # ============================================================
-
-# Editor
-export EDITOR=nvim
-
-# Ripgrep config
-export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
-
-# Cargo
-[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
-
-# Bob (neovim version manager)
-[[ -d "$HOME/.local/share/bob/nvim-bin" ]] && export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
-
-# fnm (Fast Node Manager)
-export PATH="$HOME/.local/share/fnm:$PATH"
-
-# Local binaries (pipx, etc.)
-export PATH="$HOME/.local/bin:$PATH"
-
-# Homebrew
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
-[[ -x /home/linuxbrew/.linuxbrew/bin/brew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-# Vulkan SDK (macOS / MoltenVK)
-if [[ -d "$HOME/VulkanSDK/1.4.350.1/macOS" ]]; then
-  export VULKAN_SDK="$HOME/VulkanSDK/1.4.350.1/macOS"
-  export PATH="$VULKAN_SDK/bin:$PATH"
-  export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib:${DYLD_LIBRARY_PATH:-}"
-  export VK_ADD_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"
-  export VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
-  export VK_DRIVER_FILES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
-  export PKG_CONFIG_PATH="$VULKAN_SDK/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
-fi
+[ -f "$HOME/.config/shell/env.sh" ] && . "$HOME/.config/shell/env.sh"
 
 # ============================================================
 # Interactive-only below — agents/scripts return here

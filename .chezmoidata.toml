@@ -1,0 +1,7 @@
+# Static template data — read on EVERY chezmoi operation (unlike
+# .chezmoi.toml.tmpl, which only renders at `chezmoi init`). Put
+# non-prompted constants here so there's a single source of truth.
+
+# Vulkan SDK version (macOS / MoltenVK). Bump this one line on upgrade;
+# referenced from the shell env (env.sh) and fish paths.
+vulkanVersion = "1.4.350.1"
