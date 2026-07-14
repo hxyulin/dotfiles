@@ -1,0 +1,30 @@
+{{- if .isUbuntu -}}
+#!/bin/bash
+# Ubuntu has no modern Neovim in apt, so install it via bob (matches the bob
+# PATH wired in ~/.config/shell/env.sh: ~/.local/share/bob/nvim-bin).
+set -euo pipefail
+
+# bob puts the active nvim under ~/.local/share/bob/nvim-bin.
+export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
+if command -v nvim &>/dev/null; then
+  exit 0
+fi
+
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+if ! command -v cargo &>/dev/null; then
+  echo "cargo not found; skipping Neovim install (install rustup, then re-run chezmoi apply)."
+  exit 0
+fi
+
+if ! command -v bob &>/dev/null; then
+  echo "Installing bob (Neovim version manager)..."
+  if command -v cargo-binstall &>/dev/null; then
+    cargo binstall --no-confirm bob-nvim
+  else
+    cargo install --locked bob-nvim
+  fi
+fi
+
+echo "Installing latest stable Neovim via bob..."
+bob use stable
+{{- end }}

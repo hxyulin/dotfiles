@@ -10,6 +10,8 @@ echo "Installing age encryption tool..."
 brew install age
 {{- else if .isArch }}
 sudo pacman -S --needed --noconfirm age
+{{- else if .isUbuntu }}
+sudo apt-get install -y age
 {{- else }}
 # Fallback: install from source
 if command -v cargo &>/dev/null; then

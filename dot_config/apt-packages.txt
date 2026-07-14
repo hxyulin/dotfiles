@@ -9,3 +9,8 @@ fish
 curl
 git
 build-essential
+# Fetch/verify helpers used by setup scripts (eza repo, font install)
+wget
+gpg
+unzip
+fontconfig

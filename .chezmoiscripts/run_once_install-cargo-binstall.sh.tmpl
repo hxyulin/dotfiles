@@ -1,0 +1,22 @@
+#!/bin/bash
+# Install cargo-binstall so run_onchange_cargo-packages (and the neovim script)
+# can fetch prebuilt binaries instead of compiling every crate from source.
+# Plain run_once (not before_) so it runs after the rustup before-script has
+# provided cargo, but still sorts before run_onchange_cargo-packages.
+# No platform gate — useful wherever cargo is present.
+set -euo pipefail
+
+# Make cargo/rustup (installed by the rustup before-script) available.
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+if ! command -v cargo &>/dev/null; then
+  exit 0
+fi
+
+if command -v cargo-binstall &>/dev/null; then
+  exit 0
+fi
+
+echo "Installing cargo-binstall..."
+curl -L --proto '=https' --tlsv1.2 -sSf \
+  https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash

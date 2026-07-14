@@ -1,0 +1,25 @@
+{{- if .isUbuntu -}}
+#!/bin/bash
+# Install JetBrainsMono Nerd Font on Ubuntu (Arch gets it via the
+# ttf-jetbrains-mono-nerd pacman package). Referenced by ghostty/terminal config.
+set -euo pipefail
+
+font_dir="$HOME/.local/share/fonts"
+
+# Idempotent: skip if the font is already installed.
+if ls "$font_dir"/JetBrainsMonoNerdFont*.ttf &>/dev/null; then
+  exit 0
+fi
+
+echo "Installing JetBrainsMono Nerd Font..."
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+curl -fsSL -o "$tmp/JetBrainsMono.zip" \
+  https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+mkdir -p "$font_dir"
+unzip -oq "$tmp/JetBrainsMono.zip" -d "$font_dir" -x "*.md" "LICENSE*"
+
+fc-cache -f "$font_dir" >/dev/null
+echo "JetBrainsMono Nerd Font installed."
+{{- end }}

@@ -18,8 +18,13 @@ grep -v '^#' ~/.config/apt-packages.txt | grep -v '^\s*$' | xargs sudo apt-get i
 # Install eza (from added repo)
 sudo apt-get install -y eza
 
-# Install zoxide (not in apt)
-if ! command -v zoxide &>/dev/null; then
-  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+# Shim Debian/Ubuntu binary names to the expected commands (~/.local/bin is on PATH).
+# apt ships fd-find as `fdfind` and bat as `batcat`.
+mkdir -p ~/.local/bin
+if [ ! -e ~/.local/bin/fd ] && command -v fdfind &>/dev/null; then
+  ln -s "$(command -v fdfind)" ~/.local/bin/fd
+fi
+if [ ! -e ~/.local/bin/bat ] && command -v batcat &>/dev/null; then
+  ln -s "$(command -v batcat)" ~/.local/bin/bat
 fi
 {{- end }}
